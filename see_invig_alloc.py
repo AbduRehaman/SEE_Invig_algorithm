@@ -159,14 +159,14 @@ def group_gets_assigned(classrooms,cursor,connection):
         x = random.randint(0,3)
         faculties_group = get_faculties_in_group(groups[x][0], groups[x][1],cursor,connection)
         for i in faculties_group:
-            print(i)
+            # print(i)
             if len(y)==0:
                 break
             t = y.pop()
-            print(classrooms[t][3])
-            print(classrooms[t][2])
-            print(classrooms[t][0])
-            print(classrooms[t][4])
-            print(groups[x][1])
+            # print(classrooms[t][3])
+            # print(classrooms[t][2])
+            # print(classrooms[t][0])
+            # print(classrooms[t][4])
+            # print(groups[x][1])
             assign_faculty_classroom(i, classrooms[t][3], classrooms[t][2], classrooms[t][0], classrooms[t][4], classrooms[t][1],cursor,connection)
             increment_invig_count(i, groups[x][1],cursor,connection)
