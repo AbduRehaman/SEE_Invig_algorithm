@@ -1,0 +1,100 @@
+CREATE TABLE `department` (
+  `Department_ID` varchar(7) NOT NULL,
+  `Department_Name` varchar(50) DEFAULT NULL,
+  `floors` int DEFAULT NULL,
+  PRIMARY KEY (`Department_ID`)
+);
+
+CREATE TABLE `classroom` (
+  `Classroom_ID` varchar(7) NOT NULL,
+  `Capacity` int DEFAULT NULL,
+  `Department_ID` varchar(7) NOT NULL,
+  PRIMARY KEY (`Classroom_ID`,`Department_ID`),
+  KEY `Department_ID` (`Department_ID`),
+  CONSTRAINT `classroom_ibfk_1` FOREIGN KEY (`Department_ID`) REFERENCES `DEPARTMENT` (`Department_ID`)
+);
+
+CREATE TABLE `faculty` (
+  `Faculty_ID` varchar(10) NOT NULL,
+  `F_Name` varchar(20) DEFAULT NULL,
+  `M_Name` varchar(10) DEFAULT NULL,
+  `L_Name` varchar(10) DEFAULT NULL,
+  `Email` varchar(50) DEFAULT NULL,
+  `Group_ID` varchar(10) DEFAULT NULL,
+  `Phone_NO` varchar(15) DEFAULT NULL,
+  `Department_ID` varchar(7) DEFAULT NULL,
+  `Invig_count` int DEFAULT NULL,
+  `special_count` int DEFAULT NULL,
+  PRIMARY KEY (`Faculty_ID`),
+  KEY `Department_ID` (`Department_ID`),
+  CONSTRAINT `faculty_ibfk_1` FOREIGN KEY (`Department_ID`) REFERENCES `DEPARTMENT` (`Department_ID`) ON DELETE CASCADE
+);
+
+CREATE TABLE `exam` (
+  `Academic_Year` varchar(4) NOT NULL,
+  `Exam_Type` varchar(20) NOT NULL,
+  PRIMARY KEY (`Academic_Year`,`Exam_Type`)
+);
+
+CREATE TABLE `subject` (
+  `Subject_ID` varchar(10) NOT NULL,
+  `Subject_Name` varchar(30) NOT NULL,
+  `Duration` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`Subject_ID`)
+);
+
+CREATE TABLE `enrolled` (
+  `Academic_Year` varchar(4) NOT NULL,
+  `Exam_Type` varchar(20) NOT NULL,
+  `Subject_ID` varchar(10) NOT NULL,
+  `students_enrolled` int DEFAULT NULL,
+  PRIMARY KEY (`Academic_Year`,`Exam_Type`,`Subject_ID`),
+  KEY `Subject_ID` (`Subject_ID`),
+  CONSTRAINT `enrolled_ibfk_1` FOREIGN KEY (`Academic_Year`, `Exam_Type`) REFERENCES `exam` (`Academic_Year`, `Exam_Type`) ON DELETE CASCADE,
+  CONSTRAINT `enrolled_ibfk_2` FOREIGN KEY (`Subject_ID`) REFERENCES `subject` (`Subject_ID`)
+);
+
+CREATE TABLE `has_exam` (
+  `Academic_Year` varchar(4) NOT NULL,
+  `Exam_Type` varchar(15) NOT NULL,
+  `Subject_ID` varchar(10) NOT NULL,
+  `required_invigilators` int DEFAULT NULL,
+  `Exam_Date` date DEFAULT NULL,
+  PRIMARY KEY (`Academic_Year`,`Exam_Type`,`Subject_ID`),
+  KEY `Subject_ID` (`Subject_ID`)
+);
+
+CREATE TABLE `assigned_classrooms` (
+  `Classroom_ID` varchar(7) NOT NULL,
+  `Subject_ID` varchar(10) NOT NULL,
+  `Exam_Type` varchar(15) NOT NULL,
+  `Academic_Year` varchar(4) NOT NULL,
+  `Department_ID` varchar(7) NOT NULL,
+  PRIMARY KEY (`Classroom_ID`,`Subject_ID`,`Exam_Type`,`Academic_Year`,`Department_ID`),
+  KEY `Academic_Year` (`Academic_Year`,`Exam_Type`),
+  KEY `Subject_ID` (`Subject_ID`),
+  KEY `Department_ID` (`Department_ID`),
+  CONSTRAINT `assigned_classrooms_ibfk_1` FOREIGN KEY (`Classroom_ID`) REFERENCES `classroom` (`Classroom_ID`) ON DELETE CASCADE,
+  CONSTRAINT `assigned_classrooms_ibfk_2` FOREIGN KEY (`Academic_Year`, `Exam_Type`) REFERENCES `exam` (`Academic_Year`, `Exam_Type`) ON DELETE CASCADE,
+  CONSTRAINT `assigned_classrooms_ibfk_3` FOREIGN KEY (`Subject_ID`) REFERENCES `subject` (`Subject_ID`) ON DELETE CASCADE,
+  CONSTRAINT `assigned_classrooms_ibfk_4` FOREIGN KEY (`Department_ID`) REFERENCES `department` (`Department_ID`) ON DELETE CASCADE
+);
+
+CREATE TABLE `invigilates` (
+  `Faculty_ID` varchar(10) NOT NULL,
+  `Academic_Year` varchar(4) NOT NULL,
+  `Exam_Type` varchar(15) NOT NULL,
+  `Classroom_ID` varchar(7) NOT NULL,
+  `Department_ID` varchar(7) NOT NULL,
+  `Subject_ID` varchar(10) NOT NULL,
+  PRIMARY KEY (`Faculty_ID`,`Academic_Year`,`Exam_Type`,`Classroom_ID`,`Department_ID`,`Subject_ID`),
+  KEY `Department_ID` (`Department_ID`),
+  KEY `Academic_Year` (`Academic_Year`,`Exam_Type`),
+  KEY `Classroom_ID` (`Classroom_ID`),
+  KEY `Subject_ID` (`Subject_ID`),
+  CONSTRAINT `invigilates_ibfk_1` FOREIGN KEY (`Department_ID`) REFERENCES `DEPARTMENT` (`Department_ID`),
+  CONSTRAINT `invigilates_ibfk_2` FOREIGN KEY (`Faculty_ID`) REFERENCES `FACULTY` (`Faculty_ID`) ON DELETE CASCADE,
+  CONSTRAINT `invigilates_ibfk_3` FOREIGN KEY (`Academic_Year`, `Exam_Type`) REFERENCES `EXAM` (`Academic_Year`, `Exam_Type`) ON DELETE CASCADE,
+  CONSTRAINT `invigilates_ibfk_4` FOREIGN KEY (`Classroom_ID`) REFERENCES `CLASSROOM` (`Classroom_ID`) ON DELETE CASCADE,
+  CONSTRAINT `invigilates_ibfk_5` FOREIGN KEY (`Subject_ID`) REFERENCES `subject` (`Subject_ID`)
+);

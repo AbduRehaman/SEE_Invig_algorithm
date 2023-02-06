@@ -1,1 +1,1 @@
-close()
+delete from invigilates
