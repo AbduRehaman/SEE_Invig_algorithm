@@ -9,7 +9,7 @@ from mysql.connector import Error
 def connect():
     try:
         connection = mysql.connector.connect(    host="localhost",
-        database="SEE_INV",
+        database="SEE_INV_withflask_tryingalgo",
         user="root",
         password="root@123")
         if connection.is_connected():
@@ -18,8 +18,8 @@ def connect():
             cursor = connection.cursor(buffered=True)
             cursor.execute("select database();")
             record = cursor.fetchone()
-            print("You're connected to database: ", record)
-            return cursor, connection
+            return cursor,connection
+
     except Error as e:
         print("Error while connecting to MySQL", e)
 
@@ -74,7 +74,7 @@ def get_students_enrolled(subject_id, exam_type, academic_year,cursor,connection
     return students_enrolled
 
 def get_classrooms(cursor,connection):
-    query = "select Classroom_ID, Capacity, Department_ID from CLASSROOM"
+    query = "select Classroom_ID, Capacity, Dept_ID from CLASSROOM"
     cursor.execute(query)
     records = cursor.fetchall()
     classrooms = []
@@ -106,7 +106,7 @@ def assign_classrooms(subject_id, exam_type, academic_year,cursor,connection):
         cursor.execute(query, (i[0], subject_id, exam_type, academic_year, i[2]))
 
 def get_groups(cursor,connection):
-    query = "select Group_ID, Department_ID, Invig_count from FACULTY"
+    query = "select Group_ID, Dept_ID, Invig_count from FACULTY"
     cursor.execute(query)
     records = cursor.fetchall()
     answer = []
@@ -117,14 +117,14 @@ def get_groups(cursor,connection):
     return answer
 
 def get_invig_count(faculty_id, department_id,cursor,connection):
-    query = "select Invig_count from FACULTY where Faculty_ID = %s and Department_ID = %s"
+    query = "select Invig_count from FACULTY where Faculty_ID = %s and Dept_ID = %s"
     cursor.execute(query, (faculty_id, department_id))
     records = cursor.fetchall()
     invig_count = records[0][0]
     return invig_count
 
 def get_faculties_in_group(group_id, department_id,cursor,connection):
-    query = "select Faculty_ID from FACULTY where Group_ID = %s and Department_ID = %s"
+    query = "select Faculty_ID from FACULTY where Group_ID = %s and Dept_ID = %s"
     cursor.execute(query, (group_id, department_id))
     records = cursor.fetchall()
     faculties = []
@@ -147,7 +147,7 @@ def get_classrooms_assigned(cursor,connection):
     return classrooms
 
 def increment_invig_count(faculty_id, department_id,cursor,connection):
-    query = "update FACULTY set Invig_count = Invig_count + 1 where Faculty_ID = %s and Department_ID = %s"
+    query = "update FACULTY set Invig_count = Invig_count + 1 where Faculty_ID = %s and Dept_ID = %s"
     cursor.execute(query, (faculty_id,department_id))
     connection.commit()
 
@@ -170,3 +170,8 @@ def group_gets_assigned(classrooms,cursor,connection):
             # print(groups[x][1])
             assign_faculty_classroom(i, classrooms[t][3], classrooms[t][2], classrooms[t][0], classrooms[t][4], classrooms[t][1],cursor,connection)
             increment_invig_count(i, groups[x][1],cursor,connection)
+
+def assign_students_enrolled_to_enrolled(cursor,connection):
+    query = "update enrolled set students_enrolled = (select count(*) from student where student.exam_type = enrolled.exam_type and student.subject_id = enrolled.subject_id);"
+    cursor.execute(query)
+    connection.commit()

@@ -9,6 +9,8 @@ cursor.execute(query)
 connection.commit()
 query = "delete from assigned_classrooms"
 cursor.execute(query)
+query = "delete from enrolled"
+cursor.execute(query)
 connection.commit()
 query = "update faculty set Invig_count=0"
 cursor.execute(query)
@@ -18,13 +20,12 @@ cursor.execute(query)
 connection.commit()
 
 
-# cursor, connection = s.connect()
 possible_exams = s.get_possible_exams(cursor, connection)
 for i in possible_exams:
     s.insert_into_has_exam(i[0], i[1], i[2], cursor, connection)
-    #For initial connect to database, uncomment the below line, and fill the students enrolled value
-    # s.insert_into_enrolled(i[0], i[1], i[2], cursor, connection)
+    s.insert_into_enrolled(i[0], i[1], i[2], cursor, connection)
 
+s.assign_students_enrolled_to_enrolled(cursor,connection)
 for i in possible_exams:
     s.assign_classrooms(i[2], i[1], i[0], cursor, connection)
 
@@ -47,5 +48,5 @@ plt.xlabel("Faculty ID")
 plt.ylabel("Invigilator Count")
 plt.show()
 
-connection.close()
+
 

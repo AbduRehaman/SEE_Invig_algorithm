@@ -1,0 +1,13 @@
+classroom_id,capacity,dept_id
+101,2,CSE
+101,2,ISE
+102,5,CSE
+102,2,ISE
+103,1,CSE
+103,1,ISE
+201,1,CSE
+201,1,ISE
+202,1,CSE
+202,1,ISE
+301,2,CSE
+301,1,ISE
